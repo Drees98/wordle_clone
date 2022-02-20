@@ -2,26 +2,22 @@
 #include <array>
 #include <random>
 #include <iomanip>
-#include <fstream>
 #include <ctime>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
-array<string, 5757> get_words(string filename){
-    const int fileSize{5757};
-    array<string, fileSize> words{};
-    string word{};
-    fstream file;
-
-    file.open(filename.c_str());
+array<string, 5757> get_words(string raw_data){
+    
+    array<string, 5757> words{};
+    string word;
+    istringstream f(raw_data);
     int i{0};
-    while(file >> word){
+    while(getline(f, word)){
         words[i] = word;
         i++;
     }
-
-    file.close();
 
     return words;
 }

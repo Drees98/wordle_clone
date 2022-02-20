@@ -1,4 +1,6 @@
-R"(which
+#include <string>
+
+const std::string words = R"(which
 there
 their
 about
@@ -5754,4 +5756,4 @@ osier
 roble
 rumba
 biffy
-pupal)"
+pupal)";
