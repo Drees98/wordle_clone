@@ -23,6 +23,9 @@ wordle.cpp is the driver file that runs the code for the executable. While the f
 wordle.exe is the executable file for the program. It should run on windows machines, however I have not had the opportunity to try it on other versions of windows
 
 Future plans:
+  
   1: Move the functions into an object in the wordle_functions header file
+  
   2: Create a gui, similar to the one on the wordle website
+  
   3: Have the program create a file to track user games and display them
