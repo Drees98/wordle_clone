@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void createKeyboard(sf::RenderWindow& window){
+void createKeyboard(sf::RenderWindow& window, array<int, 26>& letterState){
 
     array<string, 26> letter_png{"q.png","w.png","e.png","r.png","t.png","y.png","u.png","i.png","o.png","p.png",
         "a.png","s.png","d.png","f.png","g.png","h.png","j.png","k.png","l.png",
@@ -23,7 +23,28 @@ void createKeyboard(sf::RenderWindow& window){
         sf::RectangleShape keyboard_background(sf::Vector2f(32.f, 32.f));
         keyboard_background.setOutlineThickness(-1.f);
         keyboard_background.setOutlineColor(sf::Color::Black);
-        keyboard_background.setFillColor(sf::Color(240,200,70));
+        switch (letterState[i])
+        {
+        case 0:
+            keyboard_background.setFillColor(sf::Color::White);
+            break;
+
+        case 1:
+            keyboard_background.setFillColor(sf::Color::Green);
+            break;
+
+        case 2:
+            keyboard_background.setFillColor(sf::Color(240,200,70));
+            break;
+
+        case 3:
+            keyboard_background.setFillColor(sf::Color(152,154,158));
+            break;
+        
+        default:
+            break;
+        }
+        
         if(i < 10){
             keyboard_background.setPosition(95 + (i*42),574);
             keyboard_sprite.setPosition(95 + (i*42),574);
@@ -41,6 +62,98 @@ void createKeyboard(sf::RenderWindow& window){
     }  
 }
 
+char clickKeyboard(array<int, 2> xandy){
+    if (xandy[1] >= 574 && xandy[1] <= 606){
+        if (xandy[0] >= 95 && xandy[0] <= 127){
+            return 'q';
+        }
+        else if(xandy[0] >= 137 && xandy[0] <= 169){
+            return 'w';
+        }
+        else if(xandy[0] >= 179 && xandy[0] <= 211){
+            return 'e';
+        }
+        else if(xandy[0] >= 221 && xandy[0] <= 253){
+            return 'r';
+        }
+        else if(xandy[0] >= 263 && xandy[0] <= 295){
+            return 't';
+        }
+        else if(xandy[0] >= 305 && xandy[0] <= 337){
+            return 'y';
+        }
+        else if(xandy[0] >= 347 && xandy[0] <= 379){
+            return 'u';
+        }
+        else if(xandy[0] >= 389 && xandy[0] <= 421){
+            return 'i';
+        }
+        else if(xandy[0] >= 431 && xandy[0] <= 463){
+            return 'o';
+        }
+        else if(xandy[0] >= 473 && xandy[0] <= 505){
+            return 'p';
+        }
+        else return ' ';
+    }
+    else if (xandy[1] >= 616 && xandy[1] <= 648){
+        if(xandy[0] >= 116 && xandy[0] <= 148){
+            return 'a';
+        }
+        else if(xandy[0] >= 158 && xandy[0] <= 190){
+            return 's';
+        }
+        else if(xandy[0] >= 200 && xandy[0] <= 232){
+            return 'd';
+        }
+        else if(xandy[0] >= 242 && xandy[0] <= 274){
+            return 'f';
+        }
+        else if(xandy[0] >= 284 && xandy[0] <= 316){
+            return 'g';
+        }
+        else if(xandy[0] >= 326 && xandy[0] <= 358){
+            return 'h';
+        }
+        else if(xandy[0] >= 368 && xandy[0] <= 400){
+            return 'j';
+        }
+        else if(xandy[0] >= 410 && xandy[0] <= 442){
+            return 'k';
+        }
+        else if(xandy[0] >= 452 && xandy[0] <= 484){
+            return 'l';
+        }
+        else return ' ';
+    }
+    else if (xandy[1] >= 658 && xandy[1] <= 690){
+        if (xandy[0] >= 158 && xandy[0] <= 190){
+            return 'z';
+        }
+        else if(xandy[0] >= 200 && xandy[0] <= 232){
+            return 'x';
+        }
+        else if(xandy[0] >= 242 && xandy[0] <= 274){
+            return 'c';
+        }
+        else if(xandy[0] >= 284 && xandy[0] <= 316){
+            return 'v';
+        }
+        else if(xandy[0] >= 326 && xandy[0] <= 358){
+            return 'b';
+        }
+        else if(xandy[0] >= 368 && xandy[0] <= 400){
+            return 'n';
+        }
+        else if(xandy[0] >= 410 && xandy[0] <= 442){
+            return 'm';
+        }
+        else return ' ';
+    }
+
+    else return ' ';
+}
+
 // Main Function of the driver program
 int main(){
 
@@ -50,20 +163,35 @@ int main(){
     // Activates the game
     //game.start_game(game.get_word(), game.get_word_list());
     
-    sf::RenderWindow window(sf::VideoMode(600, 700), "Wordle Clone", sf::Style::Default);
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Red);
-
+    sf::RenderWindow window(sf::VideoMode(600, 700), "Wordle Clone", sf::Style::Titlebar|sf::Style::Close);
+    
+    array<int, 2> xandy {-1, -1};
+    array<int, 26> letterState{0};
+    char selectedLetter{' '};
     while (window.isOpen())
     {
+    
         sf::Event event;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed){
+                if (event.mouseButton.button == sf::Mouse::Left){
+                    
+                    xandy = {event.mouseButton.x, event.mouseButton.y};
+                }
+            }
         }
         window.clear(sf::Color::White);
-        createKeyboard(window);
+        createKeyboard(window, letterState);
+        if(xandy[0] != -1 || xandy[1] != -1){
+            selectedLetter = clickKeyboard(xandy);
+            cout << selectedLetter << endl;   
+        }
+        selectedLetter = ' ';
+        xandy = {-1, -1};
         window.display();
     }
     
