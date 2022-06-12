@@ -5,6 +5,71 @@
 
 using namespace std;
 
+void createTopbar(sf::RenderWindow& window, array<int, 6> letterState){
+    array<string, 6> letter{"resources/w.png", "resources/o.png", "resources/r.png", "resources/d.png", "resources/l.png", "resources/e.png",};
+
+    for(int i{0}; i<6; i++){
+        sf::Texture titleTexture;
+        if(!titleTexture.loadFromFile(letter[i])){
+            ;
+        }
+        sf::Sprite titleSprite;
+        titleSprite.setTexture(titleTexture);
+        titleSprite.scale(1.5f, 1.5f);
+        sf::RectangleShape titleBackground(sf::Vector2f(48.f, 48.f));
+        titleBackground.setOutlineThickness(-1.f);
+        titleBackground.setOutlineColor(sf::Color::Black);
+        switch (letterState[i])
+        {
+        case 0:
+            titleBackground.setFillColor(sf::Color::White);
+            break;
+
+        case 1:
+            titleBackground.setFillColor(sf::Color::Green);
+            break;
+
+        case 2:
+            titleBackground.setFillColor(sf::Color(240,200,70));
+            break;
+
+        case 3:
+            titleBackground.setFillColor(sf::Color(152,154,158));
+            break;
+        
+        default:
+            break;
+        }
+
+        titleBackground.setPosition(126 + (58*i), 10);
+        titleSprite.setPosition(126 + (58*i), 10);
+
+        window.draw(titleBackground);
+        window.draw(titleSprite);
+    }
+}
+
+
+
+void createBlanks(sf::RenderWindow& window, int guessNum, int letterCount){
+    for(int i{guessNum}; i <6; i++){
+        for(int j{0}; j<5; j++){
+            if(j==0 && i==guessNum){
+                if(letterCount == 5){
+                    break;
+                }
+                else j=letterCount;
+            }
+            sf::RectangleShape blankLetter(sf::Vector2f(48.f, 48.f));
+            blankLetter.setOutlineThickness(-1.f);
+            blankLetter.setOutlineColor(sf::Color(160, 160, 160));
+            blankLetter.setFillColor(sf::Color::White);
+            blankLetter.setPosition(155 + (58*j),88 + (58*i));
+            window.draw(blankLetter);
+        }
+    }
+}
+
 void createKeyboard(sf::RenderWindow& window, array<int, 26>& letterState){
 
     array<string, 26> letter_png{"q.png","w.png","e.png","r.png","t.png","y.png","u.png","i.png","o.png","p.png",
@@ -46,16 +111,16 @@ void createKeyboard(sf::RenderWindow& window, array<int, 26>& letterState){
         }
         
         if(i < 10){
-            keyboard_background.setPosition(95 + (i*42),574);
-            keyboard_sprite.setPosition(95 + (i*42),574);
+            keyboard_background.setPosition(95 + (i*42),449);
+            keyboard_sprite.setPosition(95 + (i*42),449);
         }
         else if(i < 19){
-            keyboard_background.setPosition(116 + ((i-10)*42),616);
-            keyboard_sprite.setPosition(116 + ((i-10)*42),616);
+            keyboard_background.setPosition(116 + ((i-10)*42),491);
+            keyboard_sprite.setPosition(116 + ((i-10)*42),491);
         }
         else{
-            keyboard_background.setPosition(158 + ((i-19)*42),658);
-            keyboard_sprite.setPosition(158 + ((i-19)*42),658);
+            keyboard_background.setPosition(158 + ((i-19)*42),533);
+            keyboard_sprite.setPosition(158 + ((i-19)*42),533);
         }
         window.draw(keyboard_background);
         window.draw(keyboard_sprite);
@@ -63,7 +128,7 @@ void createKeyboard(sf::RenderWindow& window, array<int, 26>& letterState){
 }
 
 char clickKeyboard(array<int, 2> xandy){
-    if (xandy[1] >= 574 && xandy[1] <= 606){
+    if (xandy[1] >= 449 && xandy[1] <= 481){
         if (xandy[0] >= 95 && xandy[0] <= 127){
             return 'q';
         }
@@ -96,7 +161,7 @@ char clickKeyboard(array<int, 2> xandy){
         }
         else return ' ';
     }
-    else if (xandy[1] >= 616 && xandy[1] <= 648){
+    else if (xandy[1] >= 491 && xandy[1] <= 523){
         if(xandy[0] >= 116 && xandy[0] <= 148){
             return 'a';
         }
@@ -126,7 +191,7 @@ char clickKeyboard(array<int, 2> xandy){
         }
         else return ' ';
     }
-    else if (xandy[1] >= 658 && xandy[1] <= 690){
+    else if (xandy[1] >= 533 && xandy[1] <= 565){
         if (xandy[0] >= 158 && xandy[0] <= 190){
             return 'z';
         }
@@ -163,11 +228,14 @@ int main(){
     // Activates the game
     //game.start_game(game.get_word(), game.get_word_list());
     
-    sf::RenderWindow window(sf::VideoMode(600, 700), "Wordle Clone", sf::Style::Titlebar|sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(600, 575), "Wordle Clone", sf::Style::Titlebar|sf::Style::Close);
     
     array<int, 2> xandy {-1, -1};
     array<int, 26> letterState{0};
     char selectedLetter{' '};
+    int guessNum{0};
+    int letterCount{0};
+    string word{" "};
     while (window.isOpen())
     {
     
@@ -186,9 +254,15 @@ int main(){
         }
         window.clear(sf::Color::White);
         createKeyboard(window, letterState);
+        createTopbar(window, {letterState[1],letterState[8],letterState[3],letterState[12],letterState[18],letterState[2]});
+        createBlanks(window, guessNum, letterCount);
         if(xandy[0] != -1 || xandy[1] != -1){
-            selectedLetter = clickKeyboard(xandy);
-            cout << selectedLetter << endl;   
+            selectedLetter = clickKeyboard(xandy);  
+        }
+        if(selectedLetter != ' ' && letterCount < 5){
+            letterCount++;
+            word += selectedLetter;
+            cout << word << endl; 
         }
         selectedLetter = ' ';
         xandy = {-1, -1};
