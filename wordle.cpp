@@ -37,6 +37,24 @@ int main(){
                     
                     xandy = {event.mouseButton.x, event.mouseButton.y};
                     selectedLetter = clickKeyboard(xandy);
+                    if (selectedLetter == ' ' && xandy[1] >= 533 && xandy[1] <= 565){
+                        if(xandy[0] >= 84 && xandy[0] <=148){
+                            
+                            if(letterCount == 5 && valid_word(word, wordsList, previousGuesses)){
+                                result = compare(targetWord, word, letterState, guessNum, wordLetterState);
+                                cout << wordLetterState[guessNum] << endl;
+                                previousGuesses[guessNum] = word;
+                                guessNum++;
+                                letterCount = 0;
+                                word = "";
+                            }
+                        }
+                        else if(xandy[0] >= 452 && xandy[0] <=516 && letterCount != 0){
+                            letterCount--;
+                            word.pop_back();
+                        }
+                        
+                    }
                 }
             }
 
@@ -45,7 +63,7 @@ int main(){
                     letterCount--;
                     word.pop_back();
                 }
-                if(event.key.code == sf::Keyboard::Enter && letterCount == 5){
+                else if(event.key.code == sf::Keyboard::Enter && letterCount == 5){
                     if(valid_word(word, wordsList, previousGuesses)){
                         result = compare(targetWord, word, letterState, guessNum, wordLetterState);
                         cout << wordLetterState[guessNum] << endl;
@@ -54,6 +72,9 @@ int main(){
                         letterCount = 0;
                         word = "";
                     }
+                }
+                else if(event.key.code >=0 && event.key.code < 26){
+                    selectedLetter =  numToChar(event.key.code);
                 }
             }
         }

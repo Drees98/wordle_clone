@@ -123,6 +123,11 @@ int letterToPosition(char c){
 
 }
 
+char numToChar(int index){
+    string alphabet{"abcdefghijklmnopqrstuvwxyz"};
+    return alphabet[index];
+}
+
 // Function that returns all valid words in an array
  array<string, 5757> get_words(){
         
@@ -376,12 +381,12 @@ void createKeyboard(sf::RenderWindow& window, array<int, 26>& letterState){
         "a.png","s.png","d.png","f.png","g.png","h.png","j.png","k.png","l.png",
         "z.png","x.png","c.png","v.png","b.png","n.png","m.png"};  
     string resource_pathname{"resources/"};
+    string enterPng{"resources/enter.png"};
+    string backspacePng{"resources/backspace.png"};
     for(int i{0}; i<26; i++){
-        
-        
         sf::Texture keyboard_texture;
         if(!keyboard_texture.loadFromFile(resource_pathname + letter_png[i])){
-            ;
+            cout << "error loading texture" << endl;
         }
         sf::Sprite keyboard_sprite;
         keyboard_sprite.setTexture(keyboard_texture);
@@ -423,7 +428,34 @@ void createKeyboard(sf::RenderWindow& window, array<int, 26>& letterState){
         }
         window.draw(keyboard_background);
         window.draw(keyboard_sprite);
-    }  
+    }
+
+    sf::Texture enterTexture, backspaceTexture;
+    if(!enterTexture.loadFromFile(enterPng) || !backspaceTexture.loadFromFile(backspacePng)){
+        cout << "error loading texture" << endl;
+    }
+
+    sf::Sprite enterSprite, backspaceSprite;
+    enterSprite.setTexture(enterTexture);
+    backspaceSprite.setTexture(backspaceTexture);
+
+    sf::RectangleShape enterBackground(sf::Vector2f(64.f, 32.f));
+    enterBackground.setOutlineThickness(-1.f);
+    enterBackground.setFillColor(sf::Color::White);
+    enterBackground.setOutlineColor(sf::Color::Black);
+    enterBackground.setPosition(84, 533);  
+    enterSprite.setPosition(84, 533);
+    window.draw(enterBackground);
+    window.draw(enterSprite);
+
+    sf::RectangleShape backspaceBackground(sf::Vector2f(64.f, 32.f));
+    backspaceBackground.setOutlineThickness(-1.f);
+    backspaceBackground.setFillColor(sf::Color::White);
+    backspaceBackground.setOutlineColor(sf::Color::Black);
+    backspaceBackground.setPosition(452, 533);  
+    backspaceSprite.setPosition(452, 533);
+    window.draw(backspaceBackground);
+    window.draw(backspaceSprite);
 }
 
 char clickKeyboard(array<int, 2> xandy){
