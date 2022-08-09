@@ -1,4 +1,5 @@
 #include <iostream>
+#include <bits/stdc++.h>
 #include <array>
 #include <random>
 #include <iomanip>
@@ -7,6 +8,7 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include "words.h"
+#include <fstream>
 
 using namespace std;
 
@@ -129,27 +131,26 @@ char numToChar(int index){
     return alphabet[index];
 }
 
-// Function that returns all valid words in an array
- array<string, 5757> get_words(){
+// Function that returns all valid words in an unordered set
+ unordered_set<string> get_words(){
         
     // Initializes all variables used in function
-    array<string, 5757> word_list_gw{};
+    unordered_set<string> word_list_gw{};
     string word;
     istringstream f(words);
-    int i{0};
+    
 
-    // Loops through string setting each array position to a word
+    // Loops through string adding each word to set
      while(getline(f, word)){
-        word_list_gw[i] = word;
-        i++;
+        word_list_gw.insert(word);
     }
 
-    // Returns the words in an array
+    // Returns the words in an unordered set
     return word_list_gw;
  }
 
 // Function that selects a random word from the list to be the target word, returns as string
-string random_word(array<string, 5757> word_list_rw){
+string random_word(unordered_set<string> word_list_rw){
 
      int select{};
 
@@ -158,12 +159,19 @@ string random_word(array<string, 5757> word_list_rw){
     srand(time(NULL) * 9573);
     select = rand() % word_list_rw.size();
 
+    // Iterates through unordered set to find word at random position 
+    unordered_set<string> :: iterator itr;
+    int i{0};
+    for(itr = word_list_rw.begin(); i <= select; i++){
+        itr++;
+    }
+
     // Returns selected word as a string
-    return word_list_rw[select];
+    return  *itr;
 }
 
 // Function that ensures the user enters a valid word, then returns it as a string
-bool valid_word(string guess, array<string, 5757> word_list_vw, array<string, 6> guessed){
+bool valid_word(string guess,unordered_set<string> word_list_vw, array<string, 6> guessed){
 
     // Converts the entered word to all lowercase letters
     for_each(guess.begin(), guess.end(), [](char & c){
@@ -178,14 +186,13 @@ bool valid_word(string guess, array<string, 5757> word_list_vw, array<string, 6>
     }
 
     // Ensures that the word is in the list of valid words, if true, exits early and returns true
-    for(int i{0}; i < word_list_vw.size(); i++){
-        if(guess == word_list_vw[i]){
-            return true;
-        }
+    
+    if(word_list_vw.find(guess) == word_list_vw.end()){
+        return false;
     }
-
-    // Returns false if not encountered in list
-    return false;   
+    else{
+        return true;
+    }   
 }
 
 // Function that compares guess to target word, returns boolean value depending on if they match
@@ -696,4 +703,29 @@ void createEndMenu(sf::RenderWindow& window, int gameState, string target){
     wordReveal.setString("The word was: " + target);
     wordReveal.setPosition(150 + ((300 - wordReveal.getLocalBounds().width) / 2), 90 + winLossText.getLocalBounds().height);
     window.draw(wordReveal);
+}
+
+void recordStats(int guessNum){
+    ifstream stats;
+    string l;
+    int i{0};
+    string ans{""};
+    array<int,7> vals{0};
+    stats.open("resources/stats.txt");
+    
+    while(getline(stats, l)){
+        vals[i] = stoi(l);
+        i++;
+    }
+    
+    
+    vals[guessNum]++;
+    stats.close();
+    ofstream wstats("resources/stats.txt");
+    
+    for(int i{0}; i < 7; i++){
+        ans = ans + to_string(vals[i]) + "\n";
+    }
+    wstats << ans;
+    wstats.close();
 }

@@ -2,6 +2,7 @@
 #include <array>
 #include "Wordle_Clone.h"
 #include <SFML/Graphics.hpp>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ int main(){
     // Initializes the variables used in the driver program
     array<int, 2> xandy {-1, -1};
     array<int, 26> letterState{0};
-    array<string, 5757> wordsList{get_words()};
+    unordered_set<string> wordsList{get_words()};
     array<string, 6> previousGuesses{};
     string targetWord{random_word(wordsList)};
     array<string, 6> wordLetterState{""};
@@ -76,11 +77,13 @@ int main(){
                                     // If the guess is correct, enter end menu with win
                                     if(result){
                                         gameState = 1;
+                                        recordStats(guessNum - 1);
                                     }
 
                                     // If the guess is incorrect and you are out of attempts, enter end menu with loss
                                     else if(guessNum > 5 ){
                                         gameState = 2;
+                                        recordStats(guessNum);
                                     }
                                 }
                             }
@@ -154,11 +157,13 @@ int main(){
                         // If guess is correct, enter end state with win 
                         if(result){
                             gameState = 1;
+                            recordStats(guessNum - 1);
                         }
 
                         // if incorrect and out of guess attempts, enter endstate with loss
                         else if(guessNum > 5 ){
                             gameState = 2;
+                            recordStats(guessNum);
                         }
                     }
                 }
