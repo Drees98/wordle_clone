@@ -15,8 +15,6 @@ For game only download the Game folder
 
 Future plans:
   
-  1: Have the program create a file to track user games and display them
+  1: Create in game tutorial page 
 
-  2: Create in game tutorial page 
-
-  3: messages pop and fade after incorrect guess
+  2: messages pop and fade after incorrect guess
