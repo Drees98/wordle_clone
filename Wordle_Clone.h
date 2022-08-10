@@ -666,7 +666,7 @@ void createEndMenu(sf::RenderWindow& window, int gameState, string target){
     }
 
     // Creates the text objects
-    sf::Text newGameText, endGameText, wordReveal, winLossText;
+    sf::Text newGameText, endGameText, wordReveal, winLossText, tally;
 
     // Sets values and draws the new game button text
     newGameText.setFont(font);
@@ -690,7 +690,7 @@ void createEndMenu(sf::RenderWindow& window, int gameState, string target){
         winLossText.setString("You Lose!");
     }
 
-    // Set values for message and draw
+    // Set values for win/loss message and draw
     winLossText.setFont(font);
     winLossText.setCharacterSize(45);
     winLossText.setPosition(150 + ((300 - winLossText.getLocalBounds().width) / 2), 75);
@@ -703,9 +703,63 @@ void createEndMenu(sf::RenderWindow& window, int gameState, string target){
     wordReveal.setString("The word was: " + target);
     wordReveal.setPosition(150 + ((300 - wordReveal.getLocalBounds().width) / 2), 90 + winLossText.getLocalBounds().height);
     window.draw(wordReveal);
+
+    // Opens the stats file
+    ifstream stats;
+    stats.open("resources/stats.txt");
+
+    // Loops through the file creating tally and saving values, then closes file
+    int sum{0};
+    array<int, 7> vals{0};
+    string s, tal;
+    int i{1};
+    while(getline(stats,s)){
+        if(i < 7){
+            tal += to_string(i) + ": " + s + "\n";
+            vals[i - 1] = stoi(s);
+            sum += stoi(s);
+            i++; 
+        }
+        else{
+            tal += "x: " + s + "\n";
+            vals[i - 1] = stoi(s);
+            sum += stoi(s);
+        }
+    }
+    stats.close();
+
+    // Creates and draws the tally values
+    tally.setFont(font);
+    tally.setFillColor(sf::Color::Black);
+    tally.setCharacterSize(24);
+    tally.setString(tal);
+    tally.setPosition(160, 165);
+    window.draw(tally);
+
+    // Draws the tally visual representation
+    for(int i{0}; i < 6; i++){
+        sf::RectangleShape trec(sf::Vector2f(235 * ((float)vals[i] /sum), 20));
+        trec.setFillColor(sf::Color::Green);
+        trec.setPosition(205, 170 + (i*28));
+        trec.setOutlineColor(sf::Color::Black);
+        trec.setOutlineThickness(-1.f);
+        window.draw(trec);
+    }
+
+    // Draws the failed tally in red
+    sf::RectangleShape trec(sf::Vector2f(235 * ((float)vals[6] /sum), 20));
+    trec.setFillColor(sf::Color::Red);
+    trec.setPosition(205, 170 + (6*28));
+    trec.setOutlineColor(sf::Color::Black);
+    trec.setOutlineThickness(-1.f);
+    window.draw(trec);
+    
 }
 
+// Records the number of guesses after every game
 void recordStats(int guessNum){
+    
+    // Opens the file in read and initializes variables
     ifstream stats;
     string l;
     int i{0};
@@ -713,19 +767,25 @@ void recordStats(int guessNum){
     array<int,7> vals{0};
     stats.open("resources/stats.txt");
     
+    // Adds all file values to an array
     while(getline(stats, l)){
         vals[i] = stoi(l);
         i++;
     }
     
-    
+    // Increments the tally and closes file
     vals[guessNum]++;
     stats.close();
+
+    // Opens file in write
     ofstream wstats("resources/stats.txt");
     
+    // Creates string to be written to file;
     for(int i{0}; i < 7; i++){
         ans = ans + to_string(vals[i]) + "\n";
     }
+
+    // Writes to file then closes
     wstats << ans;
     wstats.close();
 }
