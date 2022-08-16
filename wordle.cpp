@@ -96,6 +96,11 @@ int main(){
                                 word.pop_back();
                             }
                         }
+
+                        // Checks if tutorial icon was clicked
+                        else if(xandy[0] >= 490 && xandy[0] <= 537 && xandy[1] >= 12 && xandy[1] <= 59){
+                            gameState = 3;
+                        }
                     }
 
                     // If game is in end state
@@ -124,6 +129,14 @@ int main(){
                                 
                                 // Closes window
                                 window.close();
+                            }
+                        }
+                    }
+
+                    else if(gameState == 3){
+                        if(xandy[0] >= 175 && xandy[0] <= 425){
+                            if(xandy[1] >= 438 && xandy[1] <= 480){
+                                gameState = 0;
                             }
                         }
                     }
@@ -186,12 +199,20 @@ int main(){
         createBlanks(window, guessNum, letterCount);
         createCurrentGuess(window, guessNum, letterCount, word);
         createPastGuesses(window, guessNum, previousGuesses, wordLetterState);
+        createTutorialIcon(window);
 
         // If game is in end state
         if (gameState == 1 || gameState == 2){
 
             // Draws end menu to window
             createEndMenu(window, gameState, targetWord);
+        }
+
+        // If in tutorial state
+        else if(gameState == 3){
+
+            // Draw tutorial menu
+            createTutorialMenu(window);
         }
         
 

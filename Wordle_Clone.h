@@ -789,3 +789,127 @@ void recordStats(int guessNum){
     wstats << ans;
     wstats.close();
 }
+
+// Creates the end menu when game is won or lost
+void createTutorialMenu(sf::RenderWindow& window){
+
+    // String literal for rules
+    string p{R"(To play the game you will need to try to 
+guess the target 5 letter word. To create 
+a guess, use the keyboard or click on the 
+onscreen one. Hit enter to submit, and 
+backspace to remove a letter. You have six 
+guesses, with each prior guess giving hints.
+Green Background: Correct letter
+Yellow Background: In word, wrong place
+Grey background: Not in word
+visible representation below:
+)"};
+
+    // Creates and draws the menu background
+    sf::RectangleShape endMenuBackground(sf::Vector2f(300, 425));
+    endMenuBackground.setFillColor(sf::Color::White);
+    endMenuBackground.setOutlineThickness(-1.f);
+    endMenuBackground.setOutlineColor(sf::Color(160,160,160));
+    endMenuBackground.setPosition(150, 75);
+    window.draw(endMenuBackground);
+
+    // Creates the font used in the text
+    sf::Font font;
+    if(!font.loadFromFile("resources/arial.ttf")){
+        ;
+    }
+
+    // Creates and draws the close Menu button
+    sf::RectangleShape closeMenuButton(sf::Vector2f(250, 42));
+    closeMenuButton.setFillColor(sf::Color::White);
+    closeMenuButton.setOutlineThickness(-1.f);
+    closeMenuButton.setOutlineColor(sf::Color::Black);
+    closeMenuButton.setPosition(175, 438);
+    window.draw(closeMenuButton);
+
+    // Sets values and draws the quit button text
+    sf::Text closeMenuText; 
+    closeMenuText.setFont(font);
+    closeMenuText.setString("Close Menu");
+    closeMenuText.setPosition(175 + ((250 - closeMenuText.getLocalBounds().width) / 2), 438);
+    closeMenuText.setFillColor(sf::Color::Black);
+    window.draw(closeMenuText);
+
+    // Creates and draws the header
+    sf::Text header;
+    header.setFont(font);
+    header.setString("How to play");
+    header.setCharacterSize(45);
+    header.setPosition(150 + ((300 - header.getLocalBounds().width) / 2), 75);
+    header.setFillColor(sf::Color::Black);
+    window.draw(header);
+    
+    // Creates and draws the rules
+    sf::Text rules;
+    rules.setFont(font);
+    rules.setCharacterSize(14);
+    rules.setFillColor(sf::Color::Black);
+
+    // Preps variables used in alignment 
+    istringstream para(p);
+    float h;
+    string line;
+    int i{0};
+    
+    // Loops through to create center aligned text
+    while(getline(para, line)){
+
+        // Sets current text to new line
+        rules.setString(line);
+
+        // sets consistent height, had issues with line 7 
+        if(i == 0){
+            h = rules.getLocalBounds().height;
+        }
+
+        // Sets position, increments counter, draws rule line
+        rules.setPosition(150 + ((300 - rules.getLocalBounds().width) / 2), 140 + ((h + 5) * i));
+        i++;
+        window.draw(rules);
+    }
+
+    sf::RectangleShape green, yellow, grey;
+    green.setSize(sf::Vector2f(64.f, 64.f));
+    yellow.setSize(sf::Vector2f(64.f, 64.f));
+    grey.setSize(sf::Vector2f(64.f, 64.f));
+    green.setPosition(177, 345);
+    yellow.setPosition(268, 345);
+    grey.setPosition(359, 345);
+    green.setOutlineColor(sf::Color::Black);
+    yellow.setOutlineColor(sf::Color::Black);
+    grey.setOutlineColor(sf::Color::Black);
+    green.setOutlineThickness(-1.f);
+    yellow.setOutlineThickness(-1.f);
+    grey.setOutlineThickness(-1.f);
+    green.setFillColor(sf::Color::Green);
+    yellow.setFillColor(sf::Color(240,200,70));
+    grey.setFillColor(sf::Color(152, 154, 158));
+    window.draw(green);
+    window.draw(yellow);
+    window.draw(grey);
+}
+
+// Creates icon for tutorial menu
+void createTutorialIcon(sf::RenderWindow& window){
+    
+    // Creates and sets Texture
+    sf::Texture tutTexture;
+    if(!tutTexture.loadFromFile("resources/Tut.png")){
+            ;
+    }
+
+    // Creates sprite and sets position and scale
+    sf::Sprite tutSprite;
+    tutSprite.setTexture(tutTexture);
+    tutSprite.setPosition(490, 12);
+    tutSprite.scale(1.4, 1.4);
+
+    // Draws sprite to the window
+    window.draw(tutSprite);
+}
