@@ -5,16 +5,12 @@ words.txt contains a string literal that has been copied to words.h. This litera
 
 wordle_clone contains all of the functions and object required to have the wordle application run. 
 
-Resources folder contains all of the pngs and font ttf 
+Resources folder contains all of the pngs, the stats file, and the font ttf 
+
+Message file contains the message object for invalid words
 
 Using SFML to create the GUI
 
 All compiling done through use of makefile using mingw32
 
 For game only download the Game folder
-
-Future plans:
-  
-  1: Create in game tutorial page 
-
-  2: messages pop and fade after incorrect guess

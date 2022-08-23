@@ -9,6 +9,8 @@
 #include <SFML/Graphics.hpp>
 #include "words.h"
 #include <fstream>
+#include "message.h"
+#include <list>
 
 using namespace std;
 
@@ -171,7 +173,7 @@ string random_word(unordered_set<string> word_list_rw){
 }
 
 // Function that ensures the user enters a valid word, then returns it as a string
-bool valid_word(string guess,unordered_set<string> word_list_vw, array<string, 6> guessed){
+int valid_word(string guess,unordered_set<string> word_list_vw, array<string, 6> guessed){
 
     // Converts the entered word to all lowercase letters
     for_each(guess.begin(), guess.end(), [](char & c){
@@ -181,17 +183,17 @@ bool valid_word(string guess,unordered_set<string> word_list_vw, array<string, 6
     // Loops through previously guessed word list, returns false if previously guessed
     for(int i{0}; i < guessed.size(); i++){
         if(guess == guessed[i]){
-            return false;
+            return 1;
          }
     }
 
     // Ensures that the word is in the list of valid words, if true, exits early and returns true
     
     if(word_list_vw.find(guess) == word_list_vw.end()){
-        return false;
+        return 2;
     }
     else{
-        return true;
+        return 0;
     }   
 }
 
@@ -738,18 +740,18 @@ void createEndMenu(sf::RenderWindow& window, int gameState, string target){
 
     // Draws the tally visual representation
     for(int i{0}; i < 6; i++){
-        sf::RectangleShape trec(sf::Vector2f(235 * ((float)vals[i] /sum), 20));
+        sf::RectangleShape trec(sf::Vector2f(205 * ((float)vals[i] /sum), 20));
         trec.setFillColor(sf::Color::Green);
-        trec.setPosition(205, 170 + (i*28));
+        trec.setPosition(235, 170 + (i*28));
         trec.setOutlineColor(sf::Color::Black);
         trec.setOutlineThickness(-1.f);
         window.draw(trec);
     }
 
     // Draws the failed tally in red
-    sf::RectangleShape trec(sf::Vector2f(235 * ((float)vals[6] /sum), 20));
+    sf::RectangleShape trec(sf::Vector2f(205 * ((float)vals[6] /sum), 20));
     trec.setFillColor(sf::Color::Red);
-    trec.setPosition(205, 170 + (6*28));
+    trec.setPosition(235, 170 + (6*28));
     trec.setOutlineColor(sf::Color::Black);
     trec.setOutlineThickness(-1.f);
     window.draw(trec);
@@ -912,4 +914,41 @@ void createTutorialIcon(sf::RenderWindow& window){
 
     // Draws sprite to the window
     window.draw(tutSprite);
+}
+
+void createMessages(sf::RenderWindow& window, list<GuessMessage>& lst){
+
+    // Creates the font used in the text
+    sf::Font font;
+    if(!font.loadFromFile("resources/arial.ttf")){
+        ;
+    }
+
+    list<GuessMessage>::iterator it = lst.begin();
+    int c{0};
+    for(auto& i : lst){
+        if(c < 3){
+            sf::RectangleShape background{sf::Vector2f(200, 25)};
+            background.setFillColor(sf::Color::Red);
+            background.setOutlineColor(sf::Color::Black);
+            background.setOutlineThickness(-1.f);
+            background.setPosition(200, 60 + (35 * c));
+
+            sf::Text mess;
+            mess.setString(i.getString());
+            mess.setFont(font);
+            mess.setFillColor(sf::Color::Black);
+            mess.setCharacterSize(16);
+            mess.setPosition(200 + (100 - mess.getLocalBounds().width / 2), (60 + (35 * c)) + (17 - mess.getLocalBounds().height) / 2);
+
+            window.draw(background);
+            window.draw(mess);
+        }
+
+        if(i.ageUp()){
+            lst.erase(it);
+        }
+        it++;
+        c++;
+    }
 }

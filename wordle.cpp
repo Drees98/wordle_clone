@@ -3,6 +3,7 @@
 #include "Wordle_Clone.h"
 #include <SFML/Graphics.hpp>
 #include <bits/stdc++.h>
+#include "message.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ int main(){
     int letterCount{0};
     bool result{false};
     string word{""};
+    list<GuessMessage> errs{};
 
     // Keeps program loop going while window is open
     while (window.isOpen())
@@ -62,8 +64,11 @@ int main(){
                             // If enter is clicked
                             if(xandy[0] >= 84 && xandy[0] <=148){
                                 
-                                // checks if the guess is a valid word
-                                if(letterCount == 5 && valid_word(word, wordsList, previousGuesses)){
+                                // Checks if the guess is a valid word or already guessed
+                                int validity{valid_word(word, wordsList, previousGuesses)};
+
+                                // If valid word
+                                if(letterCount == 5 && validity == 0){
                                     
                                     // Compares current word to target
                                     result = compare(targetWord, word, letterState, guessNum, wordLetterState);
@@ -85,6 +90,16 @@ int main(){
                                         gameState = 2;
                                         recordStats(guessNum);
                                     }
+                                }
+
+                                // If word is already guessed
+                                else if(validity == 1){
+                                    errs.push_front(GuessMessage("Already guessed"));
+                                }
+
+                                // If word is invalid
+                                else{
+                                    errs.push_front(GuessMessage("Not a valid word"));
                                 }
                             }
 
@@ -133,6 +148,7 @@ int main(){
                         }
                     }
 
+                    // Closes Tutorial if in tutorial gamestate
                     else if(gameState == 3){
                         if(xandy[0] >= 175 && xandy[0] <= 425){
                             if(xandy[1] >= 438 && xandy[1] <= 480){
@@ -157,8 +173,11 @@ int main(){
                 // If enter is pressed and word is correct length
                 else if(event.key.code == sf::Keyboard::Enter && letterCount == 5){
                     
-                    // if the word is valid
-                    if(valid_word(word, wordsList, previousGuesses)){
+                    // Checks if valid word
+                    int validity{valid_word(word, wordsList, previousGuesses)};
+
+                    // If the word is valid
+                    if(validity == 0){
 
                         // Compares word, increments guess guess count, and resets word
                         result = compare(targetWord, word, letterState, guessNum, wordLetterState);
@@ -178,6 +197,16 @@ int main(){
                             gameState = 2;
                             recordStats(guessNum);
                         }
+                    }
+
+                    // If word was already guessed
+                    else if(validity == 1){
+                        errs.push_back(GuessMessage("Already guessed"));
+                    }
+
+                    // If word is not valid
+                    else{
+                        errs.push_back(GuessMessage("Not a valid word"));
                     }
                 }
 
@@ -200,6 +229,7 @@ int main(){
         createCurrentGuess(window, guessNum, letterCount, word);
         createPastGuesses(window, guessNum, previousGuesses, wordLetterState);
         createTutorialIcon(window);
+        createMessages(window, errs);
 
         // If game is in end state
         if (gameState == 1 || gameState == 2){
